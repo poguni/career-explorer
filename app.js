@@ -120,7 +120,7 @@ const hollandDetails = {
 };
 
 // 4. 상태 관리 변수 및 클라우드 설정
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwYLdtRbKuJm_zVsKSzhOxE7DiznLXDJjYVbfuNACiCkUZqH_WcL88DA8CMuAziVPPLA/exec"; //여기에 Google Apps Script 웹 앱 배포 URL을 입력하세요.
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9k4uYURcyd9X8gaV_cJ2awdRUK4xe1lWjYw-GRsWoM0ac7UKE1jC0-_KELpvJrKmJOA/exec"; //여기에 Google Apps Script 웹 앱 배포 URL을 입력하세요.
 let studentSchool = "";
 let studentName = "";
 let studentGrade = "5";
@@ -784,10 +784,23 @@ function checkAdminLogin() {
 
     // 스프레드시트 서버 단으로 비동기 검증 요청 (비밀번호를 URL 매개변수로 전달)
     fetch(`${GAS_WEB_APP_URL}?pw=${encodeURIComponent(userPw)}`)
-        .then(res => res.json())
-        .then(resData => {
+        .then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP 오류! 상태 코드: ${res.status}`);
+            }
+            return res.text();
+        })
+        .then(text => {
             loginButton.innerText = originalText;
             loginButton.disabled = false;
+
+            let resData;
+            try {
+                resData = JSON.parse(text);
+            } catch (e) {
+                console.error("JSON 파싱 실패. 원본 응답:", text);
+                throw new Error("서버가 올바른 JSON 형식을 반환하지 않았습니다. (구글 웹 앱 배포 시 '액세스 권한: 모든 사람' 설정을 확인해 주세요)");
+            }
 
             if (resData.status === "success") {
                 // 로그인 검증 성공시 세션용 비밀번호에 동적 저장
@@ -804,7 +817,7 @@ function checkAdminLogin() {
             loginButton.innerText = originalText;
             loginButton.disabled = false;
             console.error("클라우드 로그인 검증 실패:", err);
-            alert("클라우드 서버와 통신하지 못했습니다. 비밀번호를 다시 확인하거나 네트워크를 점검해 주세요.");
+            alert(`클라우드 서버 통신 에러!\n\n[오류 원인]: ${err.message}\n\n[확인 사항]:\n1. 스프레드시트의 Apps Script 웹 앱 배포 시 권한을 '모든 사람(Anyone)'으로 설정했는지 확인해 주세요.\n2. 신규 수정된 Code.gs 코드를 스프레드시트에 새로 반영하고 '새 배포'로 배포 버전을 업데이트했는지 확인해 주세요.`);
         });
 }
 
