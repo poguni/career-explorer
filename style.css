@@ -1129,3 +1129,178 @@ body {
         display: none !important;
     }
 }
+
+/* 12. 진로활동 특기사항 모달 및 버튼 스타일 */
+.admin-btn-note {
+    background-color: #f3e8ff;
+    color: #7e22ce;
+}
+
+.admin-btn-note:hover {
+    background-color: #e9d5ff;
+}
+
+.career-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.career-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.career-modal-box {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 600px;
+    padding: 36px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.career-modal-overlay.active .career-modal-box {
+    transform: scale(1);
+}
+
+.career-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 14px;
+}
+
+.career-modal-header h3 {
+    font-family: 'Gmarket Sans', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.career-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: var(--transition-smooth);
+    line-height: 1;
+}
+
+.career-modal-close:hover {
+    color: var(--accent-red);
+}
+
+.career-modal-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+    word-break: keep-all;
+}
+
+.career-modal-textarea-container {
+    position: relative;
+    margin-bottom: 24px;
+}
+
+.career-modal-textarea {
+    width: 100%;
+    height: 240px;
+    padding: 16px;
+    border: 2px solid var(--input-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: var(--text-main);
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    line-height: 1.6;
+    transition: var(--transition-smooth);
+}
+
+.career-modal-textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+}
+
+.career-modal-counter {
+    text-align: right;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.career-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-modal-action {
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition-smooth);
+}
+
+.btn-modal-copy {
+    background: var(--primary-gradient);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.btn-modal-copy:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+}
+
+.btn-modal-cancel {
+    background: #f1f5f9;
+    color: var(--text-main);
+}
+
+.btn-modal-cancel:hover {
+    background: #e2e8f0;
+}
+
+/* 대시보드 활성화 시 컨테이너 가로폭을 넓혀 한 줄 정렬 유도 */
+.app-container:has(#step-admin-dashboard.active) {
+    max-width: 1450px !important;
+    width: 95% !important;
+    transition: max-width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 관리자 대시보드 테이블 셀 텍스트 개행 방지 및 한 줄 유지 */
+.admin-table th, .admin-table td {
+    white-space: nowrap;
+}
+
+/* 기능 열 정렬이 깔끔하도록 버튼 레이아웃 조정 */
+.admin-btn-action {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+

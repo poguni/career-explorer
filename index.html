@@ -301,7 +301,7 @@
 
         <!-- STEP 6: 관리자 대시보드 화면 -->
         <section id="step-admin-dashboard" class="step-section">
-            <div class="report-container" style="max-width: 1000px; padding: 40px;">
+            <div class="report-container" style="max-width: 1400px; padding: 40px;">
                 <header class="report-header" style="text-align: left; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9;">
                     <div>
                         <div class="report-subtitle">📊 꿈자람 진로탐색 관리 시스템</div>
@@ -342,13 +342,13 @@
                         <table class="admin-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                             <thead>
                                 <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569;">학교</th>
-                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 80px;">학급</th>
+                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 250px;">학교</th>
+                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 120px;">학급</th>
                                     <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 100px;">이름</th>
                                     <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 100px;">성격(MBTI)</th>
                                     <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 120px;">흥미(Holland)</th>
                                     <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 140px;">검사 일시</th>
-                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 160px; text-align: center;">기능</th>
+                                    <th style="padding: 16px 20px; font-weight: 700; color: #475569; width: 280px; text-align: center;">기능</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-table-body">
@@ -363,6 +363,28 @@
             </div>
         </section>
 
+    </div>
+
+    <!-- 진로활동 특기사항 모달 창 -->
+    <div id="career-note-modal" class="career-modal-overlay">
+        <div class="career-modal-box">
+            <div class="career-modal-header">
+                <h3>📝 생활기록부 진로활동 특기사항</h3>
+                <button class="career-modal-close" onclick="closeCareerModal()">&times;</button>
+            </div>
+            <p class="career-modal-desc">
+                학생의 검사 리포트를 분석하여 긍정적인 표현으로 자동 작성된 특기사항입니다.
+                내용을 직접 수정하거나 아래 버튼으로 클립보드에 복사하여 생활기록부에 기재할 수 있습니다.
+            </p>
+            <div class="career-modal-textarea-container">
+                <textarea id="career-modal-text" class="career-modal-textarea" placeholder="특기사항을 입력해 주세요."></textarea>
+                <div id="career-modal-char-count" class="career-modal-counter">0자</div>
+            </div>
+            <div class="career-modal-footer">
+                <button class="btn-modal-action btn-modal-cancel" onclick="closeCareerModal()">닫기</button>
+                <button id="btn-modal-copy" class="btn-modal-action btn-modal-copy">📋 클립보드 복사</button>
+            </div>
+        </div>
     </div>
 
     <!-- 스크립트 파일 연동 -->

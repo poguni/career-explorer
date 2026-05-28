@@ -1,44 +1,57 @@
 // app.js - AI 꿈자람 진로탐색 검사 로직 구현
 
-// 1. 30문항 데이터 정의
+// 1. 40문항 데이터 정의 (MBTI 16문항, Holland 12문항, 가치관 6문항, 생활습관 6문항)
 const questions = [
-    // [Part 1] 성격 및 대인관계 (MBTI 기반 - 8문항)
-    { id: 1, type: "mbti", dimension: "EI", text: "주말이나 방과 후에 친구들과 밖에서 뛰어놀거나 이야기하는 것이 혼자 집에 있는 것보다 더 좋다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 2, type: "mbti", dimension: "EI", text: "새로운 친구를 만나서 이야기하거나 친해지는 것이 부끄럽지 않고 재미있다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 3, type: "mbti", dimension: "SN", text: "그림을 그리거나 무언가를 만들 때, 눈에 보이는 진짜 사물을 똑같이 따라 그리는 것을 좋아한다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 4, type: "mbti", dimension: "SN", text: "엉뚱하고 재미있는 상상을 하거나, \"미래에는 세상이 어떻게 변할까?\" 같은 생각을 자주 한다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 5, type: "mbti", dimension: "TF", text: "친구가 속상해서 울고 있을 때, 해결 방법을 말해주는 것보다 \"속상했겠다\" 하며 마음을 위로해 주는 것이 먼저다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 6, type: "mbti", dimension: "TF", text: "놀이나 게임 규칙을 정할 때, 모든 사람에게 공평하고 논리적인 규칙이 가장 중요하다고 생각한다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 7, type: "mbti", dimension: "JP", text: "학교 준비물이나 숙제는 미리미리 챙겨 두고, 계획표를 세워서 행동하는 편이다.", category: "성격 유형", badgeClass: "badge-mbti" },
-    { id: 8, type: "mbti", dimension: "JP", text: "계획이 중간에 갑자기 바뀌거나 새로운 일정이 생겨도 당황하지 않고 즐겁게 적응한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    // [Part 1] 성격 및 대인관계 (MBTI 기반 - 16문항: EI, SN, TF, JP 지표당 대칭형 각 4문항씩)
+    { id: 1, type: "mbti", dimension: "EI", subDimension: "E", text: "주말이나 방과 후에 친구들과 밖에서 뛰어놀거나 이야기하는 것이 혼자 집에 있는 것보다 더 좋다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 2, type: "mbti", dimension: "EI", subDimension: "E", text: "새로운 친구를 만나서 이야기하거나 친해지는 것이 부끄럽지 않고 재미있다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 3, type: "mbti", dimension: "EI", subDimension: "I", text: "혼자서 책을 읽거나, 좋아하는 만들기를 하며 조용히 나만의 시간을 보낼 때 마음이 더 편안하다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 4, type: "mbti", dimension: "EI", subDimension: "I", text: "여러 사람 앞에 서서 발표하기보다는 친하고 편한 친구 1~2명과 도란도란 대화하는 것이 더 좋다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    
+    { id: 5, type: "mbti", dimension: "SN", subDimension: "S", text: "그림을 그리거나 무언가를 만들 때, 눈에 보이는 진짜 사물을 똑같이 따라 그리는 것을 좋아한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 6, type: "mbti", dimension: "SN", subDimension: "N", text: "엉뚱하고 재미있는 상상을 하거나, \"미래에는 세상이 어떻게 변할까?\" 같은 생각을 자주 한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 7, type: "mbti", dimension: "SN", subDimension: "S", text: "상상 속 이야기보다 실제로 겪은 일이나 역사적 사실, 과학 실험 같은 실제 일어난 일에 더 호기심이 생긴다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 8, type: "mbti", dimension: "SN", subDimension: "N", text: "책을 읽거나 영화를 볼 때 주인공의 감정에 몰입해 뒷이야기를 상상하여 덧붙여 꾸며보는 것을 잘한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    
+    { id: 9, type: "mbti", dimension: "TF", subDimension: "F", text: "친구가 속상해서 울고 있을 때, 해결 방법을 말해주는 것보다 \"속상했겠다\" 하며 마음을 위로해 주는 것이 먼저다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 10, type: "mbti", dimension: "TF", subDimension: "T", text: "놀이나 게임 규칙을 정할 때, 모든 사람에게 공평하고 논리적인 규칙이 가장 중요하다고 생각한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 11, type: "mbti", dimension: "TF", subDimension: "T", text: "잘못된 일에 대해서는 친한 친구라 할지라도 무엇이 잘못되었는지 이성적이고 차분하게 짚고 넘어가야 한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 12, type: "mbti", dimension: "TF", subDimension: "F", text: "다른 사람을 대할 때 말의 논리성보다는 상대방이 상처받지 않게 다정한 말투로 전하는 것이 더 소중하다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    
+    { id: 13, type: "mbti", dimension: "JP", subDimension: "J", text: "학교 준비물이나 숙제는 미리미리 챙겨 두고, 계획표를 세워서 행동하는 편이다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 14, type: "mbti", dimension: "JP", subDimension: "P", text: "계획이 중간에 갑자기 바뀌거나 새로운 일정이 생겨도 당황하지 않고 즐겁게 적응한다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 15, type: "mbti", dimension: "JP", subDimension: "J", text: "가방이나 책장이 흐트러져 있는 것보다 일정한 규칙에 따라 정돈되어 있어야 마음이 편안하고 일이 잘 된다.", category: "성격 유형", badgeClass: "badge-mbti" },
+    { id: 16, type: "mbti", dimension: "JP", subDimension: "P", text: "정해진 시간표를 빡빡하게 따르기보다는 자유롭게 그때그때 하고 싶은 과목이나 놀이를 선택해서 하는 것이 좋다.", category: "성격 유형", badgeClass: "badge-mbti" },
 
     // [Part 2] 내가 좋아하는 활동 (Holland 진로 흥미 - 12문항)
-    { id: 9, type: "holland", dimension: "R", text: "손으로 로봇을 조립하거나, 식물을 기르고, 무언가를 고치는 활동을 좋아한다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 10, type: "holland", dimension: "R", text: "교실에 앉아 공부하는 것보다 체육 시간이나 밖에서 몸을 움직이는 활동이 더 즐겁다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 11, type: "holland", dimension: "I", text: "과학 실험을 하거나, 수학 문제를 풀 때 왜 그런 결과가 나왔는지 원리를 알아내는 것이 재미있다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 12, type: "holland", dimension: "I", text: "곤충, 별자리, 역사 등 관심 있는 분야를 책이나 인터넷에서 깊이 있게 찾아보는 편이다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 13, type: "holland", dimension: "A", text: "글쓰기, 그리기, 악기 연주, 연극 등 나만의 생각이나 느낌을 자유롭게 표현하는 활동이 좋다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 14, type: "holland", dimension: "A", text: "교실이나 내 방을 꾸미거나, 옷을 예쁘게 매치해서 입는 등 아름다운 것에 관심이 많다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 15, type: "holland", dimension: "S", text: "모르는 것을 물어보는 친구에게 친절하게 설명해 주거나 도와줄 때 큰 보람을 느낀다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 16, type: "holland", dimension: "S", text: "친구들 사이에서 의견이 안 맞을 때, 중간에서 서로 화해할 수 있도록 돕는 역할을 잘한다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 17, type: "holland", dimension: "E", text: "모둠 활동(그룹 과제)을 할 때, 앞장서서 친구들을 이끌고 역할을 나누어 주는 대장 역할을 좋아한다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 18, type: "holland", dimension: "E", text: "회장 선거에 나가거나 사람들 앞에 서서 내 주장과 생각을 발표하는 것에 자신감이 있다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 19, type: "holland", dimension: "C", text: "필기구를 깔끔하게 정리정돈하거나, 일기장/노트를 규칙에 맞춰 꼼꼼하게 적는 일을 잘한다.", category: "진로 흥미", badgeClass: "badge-holland" },
-    { id: 20, type: "holland", dimension: "C", text: "선생님이나 부모님이 정해주신 규칙이나 정해진 순서를 정확하게 지키는 것이 마음 편하다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 17, type: "holland", dimension: "R", text: "손으로 로봇을 조립하거나, 식물을 기르고, 무언가를 고치는 활동을 좋아한다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 18, type: "holland", dimension: "R", text: "교실에 앉아 공부하는 것보다 체육 시간이나 밖에서 몸을 움직이는 활동이 더 즐겁다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 19, type: "holland", dimension: "I", text: "과학 실험을 하거나, 수학 문제를 풀 때 왜 그런 결과가 나왔는지 원리를 알아내는 것이 재미있다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 20, type: "holland", dimension: "I", text: "곤충, 별자리, 역사 등 관심 있는 분야를 책이나 인터넷에서 깊이 있게 찾아보는 편이다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 21, type: "holland", dimension: "A", text: "글쓰기, 그리기, 악기 연주, 연극 등 나만의 생각이나 느낌을 자유롭게 표현하는 활동이 좋다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 22, type: "holland", dimension: "A", text: "교실이나 내 방을 꾸미거나, 옷을 예쁘게 매치해서 입는 등 아름다운 것에 관심이 많다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 23, type: "holland", dimension: "S", text: "모르는 것을 물어보는 친구에게 친절하게 설명해 주거나 도와줄 때 큰 보람을 느낀다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 24, type: "holland", dimension: "S", text: "친구들 사이에서 의견이 안 맞을 때, 중간에서 서로 화해할 수 있도록 돕는 역할을 잘한다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 25, type: "holland", dimension: "E", text: "모둠 활동(그룹 과제)을 할 때, 앞장서서 친구들을 이끌고 역할을 나누어 주는 대장 역할을 좋아한다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 26, type: "holland", dimension: "E", text: "회장 선거에 나가거나 사람들 앞에 서서 내 주장과 생각을 발표하는 것에 자신감이 있다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 27, type: "holland", dimension: "C", text: "필기구를 깔끔하게 정리정돈하거나, 일기장/노트를 규칙에 맞춰 꼼꼼하게 적는 일을 잘한다.", category: "진로 흥미", badgeClass: "badge-holland" },
+    { id: 28, type: "holland", dimension: "C", text: "선생님이나 부모님이 정해주신 규칙이나 정해진 순서를 정확하게 지키는 것이 마음 편하다.", category: "진로 흥미", badgeClass: "badge-holland" },
 
-    // [Part 3] 내가 소중하게 생각하는 가치 (가치관 지표 - 5문항)
-    { id: 21, type: "value", dimension: "creativity", text: "남들과 똑같은 방법보다 나만의 새로운 아이디어와 방법으로 문제를 해결할 때 기분이 좋다.", category: "가치관", badgeClass: "badge-values" },
-    { id: 22, type: "value", dimension: "cooperation", text: "혼자서 1등을 하는 것보다 친구들과 다 같이 협동하여 하나의 목표를 이루는 것이 더 소중하다.", category: "가치관", badgeClass: "badge-values" },
-    { id: 23, type: "value", dimension: "autonomy", text: "다른 사람이 시켜서 하는 일보다 내가 스스로 결정하고 계획해서 하는 일에 더 열정이 생긴다.", category: "가치관", badgeClass: "badge-values" },
-    { id: 24, type: "value", dimension: "achievement", text: "어려운 문제나 숙제를 끈기 있게 끝까지 풀어내어 스스로 성공했을 때 큰 뿌듯함을 느낀다.", category: "가치관", badgeClass: "badge-values" },
-    { id: 25, type: "value", dimension: "altruism", text: "나에게 이익이 되지 않더라도, 우리 반이나 이웃을 위해 착한 일을 하거나 돕는 행동이 가치 있다고 생각한다.", category: "가치관", badgeClass: "badge-values" },
+    // [Part 3] 내가 소중하게 생각하는 가치 (가치관 지표 - 6문항)
+    { id: 29, type: "value", dimension: "creativity", text: "남들과 똑같은 방법보다 나만의 새로운 아이디어와 방법으로 문제를 해결할 때 기분이 좋다.", category: "가치관", badgeClass: "badge-values" },
+    { id: 30, type: "value", dimension: "cooperation", text: "혼자서 1등을 하는 것보다 친구들과 다 같이 협동하여 하나의 목표를 이루는 것이 더 소중하다.", category: "가치관", badgeClass: "badge-values" },
+    { id: 31, type: "value", dimension: "autonomy", text: "다른 사람이 시켜서 하는 일보다 내가 스스로 결정하고 계획해서 하는 일에 더 열정이 생긴다.", category: "가치관", badgeClass: "badge-values" },
+    { id: 32, type: "value", dimension: "achievement", text: "어려운 문제나 숙제를 끈기 있게 끝까지 풀어내어 스스로 성공했을 때 큰 뿌듯함을 느낀다.", category: "가치관", badgeClass: "badge-values" },
+    { id: 33, type: "value", dimension: "altruism", text: "나에게 이익이 되지 않더라도, 우리 반이나 이웃을 위해 착한 일을 하거나 돕는 행동이 가치 있다고 생각한다.", category: "가치관", badgeClass: "badge-values" },
+    { id: 34, type: "value", dimension: "influence", text: "내 아이디어나 리더십으로 친구들이나 모둠의 의견을 이끌고 변화를 주도할 때 뿌듯함을 느낀다.", category: "가치관", badgeClass: "badge-values" },
 
-    // [Part 4] 나의 공부 및 생활 습관 (학습 및 생활 습관 - 5문항)
-    { id: 26, type: "habit", dimension: "plan", text: "오늘 해야 할 공부나 일을 시작하기 전에 무엇부터 해야 할지 미리 정해 놓는다.", category: "생활 습관", badgeClass: "badge-habits" },
-    { id: 27, type: "habit", dimension: "focus", text: "공부를 시작하면 스마트폰이나 게임 생각에 한눈팔지 않고 오랫동안 집중할 수 있다.", category: "생활 습관", badgeClass: "badge-habits" },
-    { id: 28, type: "habit", dimension: "management", text: "내 책상, 가방, 방 안을 스스로 깨끗하게 정리하고 정돈하는 습관이 있다.", category: "생활 습관", badgeClass: "badge-habits" },
-    { id: 29, type: "habit", dimension: "cooperation", text: "모둠 수업을 할 때 내 의견만 고집하지 않고 다른 친구들의 이야기를 귀담아듣고 잘 맞추어 준다.", category: "생활 습관", badgeClass: "badge-habits" },
-    { id: 30, type: "habit", dimension: "feedback", text: "숙제나 공부가 끝나면 내가 잘 이해했는지 다시 살펴보고, 시간 약속(등교 시간, 학원 시간 등)을 잘 지킨다.", category: "생활 습관", badgeClass: "badge-habits" }
+    // [Part 4] 나의 공부 및 생활 습관 (학습 및 생활 습관 - 6문항)
+    { id: 35, type: "habit", dimension: "plan", text: "오늘 해야 할 공부나 일을 시작하기 전에 무엇부터 해야 할지 미리 정해 놓는다.", category: "생활 습관", badgeClass: "badge-habits" },
+    { id: 36, type: "habit", dimension: "focus", text: "공부를 시작하면 스마트폰이나 게임 생각에 한눈팔지 않고 오랫동안 집중할 수 있다.", category: "생활 습관", badgeClass: "badge-habits" },
+    { id: 37, type: "habit", dimension: "management", text: "내 책상, 가방, 방 안을 스스로 깨끗하게 정리하고 정돈하는 습관이 있다.", category: "생활 습관", badgeClass: "badge-habits" },
+    { id: 38, type: "habit", dimension: "cooperation", text: "모둠 수업을 할 때 내 의견만 고집하지 않고 다른 친구들의 이야기를 귀담아듣고 잘 맞추어 준다.", category: "생활 습관", badgeClass: "badge-habits" },
+    { id: 39, type: "habit", dimension: "feedback", text: "숙제나 공부가 끝나면 내가 잘 이해했는지 다시 살펴보고, 시간 약속(등교 시간, 학원 시간 등)을 잘 지킨다.", category: "생활 습관", badgeClass: "badge-habits" },
+    { id: 40, type: "habit", dimension: "self_control", text: "공부나 숙제를 할 때 하기 싫은 마음이 들어도 감정을 조절하며 스스로 정한 분량을 끝까지 해낸다.", category: "생활 습관", badgeClass: "badge-habits" }
 ];
 
 // 2. MBTI 데이터 해설셋
@@ -129,6 +142,8 @@ let currentQuestionIndex = 0;
 let answers = {}; // { questionId: answerValue }
 let radarChartInstance = null;
 let viewMode = "student"; // 'student' 또는 'admin' (결과 조회 모드)
+let currentDashboardList = []; // 실시간 데이터 유실 방지용 대시보드 리스트 캐시
+
 
 // 5. DOM 요소 바인딩
 const stepIntro = document.getElementById("step-intro");
@@ -202,6 +217,32 @@ function init() {
     inputAdminPw.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
             checkAdminLogin();
+        }
+    });
+
+    // 진로활동 특기사항 모달 이벤트 등록
+    const btnModalCopy = document.getElementById("btn-modal-copy");
+    if (btnModalCopy) {
+        btnModalCopy.addEventListener("click", copyCareerNoteText);
+    }
+    const careerModalText = document.getElementById("career-modal-text");
+    const careerModalCharCount = document.getElementById("career-modal-char-count");
+    if (careerModalText && careerModalCharCount) {
+        careerModalText.addEventListener("input", () => {
+            careerModalCharCount.innerText = `${careerModalText.value.length}자`;
+        });
+    }
+    const careerModal = document.getElementById("career-note-modal");
+    if (careerModal) {
+        careerModal.addEventListener("click", (e) => {
+            if (e.target === careerModal) {
+                closeCareerModal();
+            }
+        });
+    }
+    window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeCareerModal();
         }
     });
 }
@@ -351,19 +392,20 @@ function renderReport() {
     document.getElementById("report-date").innerText = `${now.getFullYear()}. ${String(now.getMonth() + 1).padStart(2, '0')}. ${String(now.getDate()).padStart(2, '0')}`;
 
     // B. MBTI 점수 연산
-    let scoreE = (answers[1] || 3) + (answers[2] || 3); // 2~10
-    let scoreS = answers[3] || 3;
-    let scoreN = answers[4] || 3;
-    let scoreF = answers[5] || 3;
-    let scoreT = answers[6] || 3;
-    let scoreJ = answers[7] || 3;
-    let scoreP = answers[8] || 3;
+    // B. MBTI 점수 연산 (subDimension 대칭형 루프 계산 방식)
+    let mbtiScores = { E: 0, I: 0, S: 0, N: 0, T: 0, F: 0, J: 0, P: 0 };
+    questions.forEach(q => {
+        if (q.type === "mbti" && q.subDimension) {
+            const val = answers[q.id] || 3;
+            mbtiScores[q.subDimension] += val;
+        }
+    });
 
     let mbti = "";
-    mbti += (scoreE >= 6) ? "E" : "I";
-    mbti += (scoreN >= scoreS) ? "N" : "S";
-    mbti += (scoreF >= scoreT) ? "F" : "T";
-    mbti += (scoreJ >= scoreP) ? "J" : "P";
+    mbti += (mbtiScores.E >= mbtiScores.I) ? "E" : "I";
+    mbti += (mbtiScores.N >= mbtiScores.S) ? "N" : "S";
+    mbti += (mbtiScores.F >= mbtiScores.T) ? "F" : "T";
+    mbti += (mbtiScores.J >= mbtiScores.P) ? "J" : "P";
 
     const mbtiResult = mbtiDetails[mbti] || mbtiDetails["ENFP"];
     
@@ -372,15 +414,14 @@ function renderReport() {
     document.getElementById("res-mbti-desc").innerHTML = `<strong>★ ${mbtiResult.sub} ★</strong><br><br>${mbtiResult.desc}`;
     document.getElementById("res-mbti-relation").innerText = mbtiResult.relation;
 
-    // C. 홀랜드 RIASEC 흥미 분석 연산
-    const hollandScores = {
-        R: (answers[9] || 3) + (answers[10] || 3),
-        I: (answers[11] || 3) + (answers[12] || 3),
-        A: (answers[13] || 3) + (answers[14] || 3),
-        S: (answers[15] || 3) + (answers[16] || 3),
-        E: (answers[17] || 3) + (answers[18] || 3),
-        C: (answers[19] || 3) + (answers[20] || 3)
-    };
+    // C. 홀랜드 RIASEC 흥미 분석 연산 (questions 속성 기반 동적 집계)
+    const hollandScores = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 };
+    questions.forEach(q => {
+        if (q.type === "holland" && q.dimension) {
+            const val = answers[q.id] || 3;
+            hollandScores[q.dimension] += val;
+        }
+    });
 
     // 가장 높은 유형과 두 번째 높은 유형 찾기
     const sortedHolland = Object.keys(hollandScores).sort((a, b) => hollandScores[b] - hollandScores[a]);
@@ -419,16 +460,26 @@ function renderReport() {
         jobsListContainer.appendChild(jobDiv);
     });
 
-    // D. 가치관 우선 순위 3개 선별
+    // D. 가치관 우선 순위 3개 선별 (6개 가치관 동적 매핑)
     const valueScores = [
-        { name: "창의성", key: "creativity", emoji: "💡", desc: "나만의 독창적인 아이디어로 생각하는 것", val: answers[21] || 3 },
-        { name: "협동/관계", key: "cooperation", emoji: "🤝", desc: "친구들과 다 같이 힘을 모아 함께 일하는 것", val: answers[22] || 3 },
-        { name: "자율성", key: "autonomy", emoji: "🧗", desc: "스스로 계획을 세우고 마음껏 결정하는 것", val: answers[23] || 3 },
-        { name: "성취", key: "achievement", emoji: "🏆", desc: "어려운 과제를 끝까지 노력하여 완성시키는 것", val: answers[24] || 3 },
-        { name: "이타심/봉사", key: "altruism", emoji: "💝", desc: "남을 이롭게 하고 행복하게 돕는 것", val: answers[25] || 3 }
+        { name: "창의성", key: "creativity", emoji: "💡", desc: "나만의 독창적인 아이디어로 생각하는 것", val: 3 },
+        { name: "협동/관계", key: "cooperation", emoji: "🤝", desc: "친구들과 다 같이 힘을 모아 함께 일하는 것", val: 3 },
+        { name: "자율성", key: "autonomy", emoji: "🧗", desc: "스스로 계획을 세우고 마음껏 결정하는 것", val: 3 },
+        { name: "성취", key: "achievement", emoji: "🏆", desc: "어려운 과제를 끝까지 노력하여 완성시키는 것", val: 3 },
+        { name: "이타심/봉사", key: "altruism", emoji: "💝", desc: "남을 이롭게 하고 행복하게 돕는 것", val: 3 },
+        { name: "지도력", key: "influence", emoji: "📢", desc: "내 의견으로 다른 사람이나 집단을 변화시키는 것", val: 3 }
     ];
 
-    // 가치관 5개 점수 내림차순 정렬
+    questions.forEach(q => {
+        if (q.type === "value") {
+            const match = valueScores.find(v => v.key === q.dimension);
+            if (match) {
+                match.val = answers[q.id] || 3;
+            }
+        }
+    });
+
+    // 가치관 점수 내림차순 정렬
     valueScores.sort((a, b) => b.val - a.val);
 
     const valuesContainer = document.getElementById("res-values-container");
@@ -448,14 +499,24 @@ function renderReport() {
         valuesContainer.appendChild(valCard);
     }
 
-    // E. 학습 및 생활 습관 5대 평가
+    // E. 학습 및 생활 습관 6대 평가 (자기 조절 지표 추가)
     const habitData = [
-        { name: "계획성 (Plan)", key: "plan", val: answers[26] || 3 },
-        { name: "집중력 (Focus)", key: "focus", val: answers[27] || 3 },
-        { name: "정리정돈 (Desk)", key: "management", val: answers[28] || 3 },
-        { name: "모둠협동 (Team)", key: "cooperation", val: answers[29] || 3 },
-        { name: "시간관리 (Time)", key: "feedback", val: answers[30] || 3 }
+        { name: "계획성 (Plan)", key: "plan", val: 3 },
+        { name: "집중력 (Focus)", key: "focus", val: 3 },
+        { name: "정리정돈 (Desk)", key: "management", val: 3 },
+        { name: "모둠협동 (Team)", key: "cooperation", val: 3 },
+        { name: "시간관리 (Time)", key: "feedback", val: 3 },
+        { name: "자기 조절 (Control)", key: "self_control", val: 3 }
     ];
+
+    questions.forEach(q => {
+        if (q.type === "habit") {
+            const match = habitData.find(h => h.key === q.dimension);
+            if (match) {
+                match.val = answers[q.id] || 3;
+            }
+        }
+    });
 
     const habitGrid = document.getElementById("res-habit-grid");
     habitGrid.innerHTML = "";
@@ -480,6 +541,10 @@ function renderReport() {
         feedback: {
             high: "시간 약속을 잘 지킬 뿐 아니라 한 행동을 돌아보고 분석할 줄 아는 성숙한 관리 능력을 가졌습니다.",
             low: "외출이나 등교 전 '10분 일찍 출발 알람'을 미리 스마트폰에 켜두고 여유 있게 움직이는 습관을 길러 보아요."
+        },
+        self_control: {
+            high: "감정이나 욕구를 다스리고 해야 할 일을 스스로 조절하여 해내는 자제력이 모범적입니다.",
+            low: "스마트폰 사용 시간 제한 모드를 켜거나, 힘든 일이 있을 땐 3번 깊이 숨을 쉬며 감정을 조절해 보세요."
         }
     };
 
@@ -805,6 +870,7 @@ function checkAdminLogin() {
             if (resData.status === "success") {
                 // 로그인 검증 성공시 세션용 비밀번호에 동적 저장
                 adminSessionPassword = userPw;
+                saveSavedResults(resData.data || []); // 로컬 캐시 갱신 추가
                 renderDashboardWithData(resData.data || []);
                 transitionStep(stepAdminLogin, stepAdminDashboard);
             } else {
@@ -929,6 +995,7 @@ function renderAdminDashboard() {
 
 // 대시보드 렌더링 보조 함수
 function renderDashboardWithData(list) {
+    currentDashboardList = list; // 캐시 갱신
     // 1. 통계 수치 계산
     const totalCount = list.length;
     statTotalCount.innerText = `${totalCount}명`;
@@ -975,9 +1042,10 @@ function renderDashboardWithData(list) {
             <td style="padding: 14px 20px; font-weight: 700; color:#0f172a;">${item.name}</td>
             <td style="padding: 14px 20px;"><span style="background:#e0e7ff; color:#4338ca; padding:3px 8px; border-radius:4px; font-weight:700; font-size:0.85rem;">${item.mbti}</span></td>
             <td style="padding: 14px 20px;"><span style="background:#dcfce7; color:#15803d; padding:3px 8px; border-radius:4px; font-weight:700; font-size:0.85rem;">${item.holland1}${item.holland2}</span></td>
-            <td style="padding: 14px 20px; font-size:0.85rem; color:var(--text-muted);">${item.date.split(" ")[0]} <span style="font-size:0.75rem;">${item.date.split(" ")[1] || ""}</span></td>
+            <td style="padding: 14px 20px; font-size:0.85rem; color:var(--text-muted);">${formatDateToYMD(item.date)}</td>
             <td style="padding: 14px 20px; text-align: center;">
                 <button class="admin-btn-action admin-btn-view" onclick="viewSavedRecord('${item.id}')">보기</button>
+                <button class="admin-btn-action admin-btn-note" onclick="generateCareerNote('${item.id}')">진로활동 특기사항</button>
                 <button class="admin-btn-action admin-btn-delete" onclick="deleteSavedRecord('${item.id}')">삭제</button>
             </td>
         `;
@@ -987,7 +1055,7 @@ function renderDashboardWithData(list) {
 
 // 대시보드에서 개별 학생 리포트 보기
 window.viewSavedRecord = function(id) {
-    const list = getSavedResults();
+    const list = currentDashboardList.length > 0 ? currentDashboardList : getSavedResults();
     const record = list.find(item => item.id === id);
     
     if (!record) {
@@ -1112,3 +1180,214 @@ function exportExcel() {
     // 엑셀 파일 저장 및 파일 다운로드 실행
     XLSX.writeFile(workbook, `진로검사_학급_결과목록_${new Date().toISOString().slice(0, 10)}.xlsx`);
 }
+
+// ----------------- 신규 추가 기능: 대시보드 개선 및 진로활동 특기사항 생성 -----------------
+
+// 날짜 포맷 변환 함수 (연도.월.일 형식으로 안전하게 변환)
+function formatDateToYMD(dateStr) {
+    if (!dateStr) return "";
+    
+    // "2026. 5. 29. 오후 3:00:00" 등의 포맷에서 숫자 3그룹 매칭
+    const matches = dateStr.match(/(\d{4})[\.\-\/\s]+\s*(\d{1,2})[\.\-\/\s]+\s*(\d{1,2})/);
+    if (matches) {
+        const year = matches[1];
+        const month = matches[2].padStart(2, '0');
+        const day = matches[3].padStart(2, '0');
+        return `${year}.${month}.${day}`;
+    }
+    
+    // Date 객체 파싱 시도
+    try {
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}.${month}.${day}`;
+        }
+    } catch (e) {
+        console.error("Date parsing error:", e);
+    }
+    
+    // 정규식이나 Date 객체 파싱이 실패하면 한글 로케일에서 날짜 부분만 획득 시도
+    const tokens = dateStr.split(" ");
+    if (tokens.length >= 3) {
+        return tokens.slice(0, 3).join(" ").replace(/\s/g, "");
+    }
+    return dateStr;
+}
+
+// 진로활동 특기사항 생성을 위한 긍정적 MBTI 특징 사전 (100자 제어용)
+const mbtiCharacterTraits = {
+    ISTJ: "책임감이 강하고 매사에 신중하며 약속을 철저히 지키는",
+    ISFJ: "주변 친구들을 따뜻하게 배려하고 타인의 감정에 깊이 공감하는",
+    INFJ: "생각이 깊고 상상력이 풍부하며 보이지 않는 곳에서 헌신하는",
+    INTJ: "독창적이고 논리적이며 스스로 세운 목표를 끝까지 해내는",
+    ISTP: "관찰력이 뛰어나고 다재다능하며 조용히 문제를 해결해 내는",
+    ISFP: "마음이 무척 따뜻하고 온화하며 예술적 감각이 돋보이는",
+    INFP: "이해심이 많고 깊은 공감 능력을 지니며 개성이 돋보이는",
+    INTP: "호기심이 풍부하고 질문을 좋아하며 논리적으로 탐구하는",
+    ESTP: "자신감이 넘치고 활동적이며 매사에 활기찬 에너지를 전달하는",
+    ESFP: "사교성이 뛰어나고 매력적이며 교실 내 분위기를 밝게 이끄는",
+    ENFP: "활발하고 긍정적인 아이디어가 많으며 새로운 도전을 즐기는",
+    ENTP: "창의적이고 호기심이 많으며 기발한 아이디어를 잘 제안하는",
+    ESTJ: "책임감이 강하고 규칙을 잘 준수하며 계획을 실천하는 리더십을 갖춘",
+    ESFJ: "친화력이 뛰어나고 조화를 중시하며 주변을 다정하게 챙기는",
+    ENFJ: "따뜻한 성품과 탁월한 대인관계 능력을 바탕으로 리더십을 보여주는",
+    ENTJ: "목표가 명확하고 실행력이 굳건하며 사람들을 열정적으로 이끄는"
+};
+
+// 홀랜드 RIASEC 흥미 유형 한글 이름 맵핑
+const hollandKoreanNames = {
+    R: "실재형",
+    I: "탐구형",
+    A: "예술형",
+    S: "사회형",
+    E: "진취형",
+    C: "관습형"
+};
+
+// 홀랜드 유형별 진로 방향 설명 사전 (200자 확보용)
+const hollandCareerDirections = {
+    R: "실제 기계나 도구 조립 또는 야외 스포츠 및 신체 활동을 수반하는 분야",
+    I: "과학적 현상 탐구, 수학적 문제해결이나 원리 분석 연구를 요하는 분야",
+    A: "글쓰기, 시각 디자인, 창작 예술 등 자유롭고 개성 있는 감각을 살리는 분야",
+    S: "타인 지원, 교육, 소통 및 심리 상담 등 이타적 봉사를 요하는 분야",
+    E: "집단 리드, 새로운 도전 기획 및 활발한 마케팅 등을 주도하는 분야",
+    C: "정보나 데이터 분류, 계획적 행정 문서 관리 등 체계적 정밀함을 요하는 분야"
+};
+
+// 가치관 1순위용 성향 설명 사전
+const valueRankDescriptions = {
+    creativity: "창의적이고 독창적인 아이디어로 문제를 적극적으로 풀어내려는",
+    cooperation: "친구들과 다 같이 힘을 모아 협동하며 공동체 조화를 이루려는",
+    autonomy: "외부의 지시보다 스스로 계획하고 자유롭게 주도적으로 결정하려는",
+    achievement: "도전적인 과제 앞에서 끈기 있게 집중하여 끝까지 성과를 완수하려는",
+    altruism: "남을 배려하고 이웃과 학급 친구들에게 헌신하며 봉사하는 것을 중요히 여기는",
+    influence: "자신의 주장과 리더십을 바탕으로 모둠을 긍정적으로 설득하고 이끌어가려는"
+};
+
+// 진로활동 특기사항 생성 핵심 함수
+window.generateCareerNote = function(id) {
+    const list = currentDashboardList.length > 0 ? currentDashboardList : getSavedResults();
+    const record = list.find(item => item.id === id);
+    if (!record) {
+        alert("학생 기록을 찾을 수 없습니다.");
+        return;
+    }
+
+    const mbti = record.mbti || "ENFP";
+    const mbtiInfo = mbtiDetails[mbti];
+    const mbtiSub = mbtiInfo ? mbtiInfo.sub : "꿈을 키우는 꿈쟁이";
+    
+    // 특징 구문 획득
+    const trait = mbtiCharacterTraits[mbti] || "성실하고 긍정적인";
+    
+    // 홀랜드 흥미유형 한글명 획득
+    const h1 = hollandKoreanNames[record.holland1] || "실재형";
+    const h2 = hollandKoreanNames[record.holland2] || "탐구형";
+    const hollandPath = hollandCareerDirections[record.holland1] || "다양한 진로 분야";
+
+    // 가치관 1순위 연산
+    const valueScores = [
+        { key: "creativity", val: 3 },
+        { key: "cooperation", val: 3 },
+        { key: "autonomy", val: 3 },
+        { key: "achievement", val: 3 },
+        { key: "altruism", val: 3 },
+        { key: "influence", val: 3 }
+    ];
+
+    // 질문 정보에서 가치관 점수를 연계 추출 (하드코딩 인덱스 방지)
+    questions.forEach(q => {
+        if (q.type === "value") {
+            const match = valueScores.find(v => v.key === q.dimension);
+            if (match) {
+                match.val = record.answers[q.id] || 3;
+            }
+        }
+    });
+    valueScores.sort((a, b) => b.val - a.val);
+    const topValueKey = valueScores[0].key;
+    const valueDesc = valueRankDescriptions[topValueKey] || "스스로 성장하려는";
+
+    // 템플릿 결합 (이름 제외, 생활기록부용 종결 어미 적용, 200자 내외 보강)
+    let rawNoteText = `성격유형검사 결과 '${mbtiSub}' 유형으로 ${trait} 성향을 보임. 가치관 조사에서는 ${valueDesc} 마음을 가장 소중하게 생각하는 것으로 분석됨. 온라인 진로검사 결과 ${h1}과 ${h2} 분야에 깊은 흥미를 보이며, 특히 ${hollandPath}에서 탁월한 강점을 발휘하여 앞으로 크게 성장해 나갈 잠재력이 큼.`;
+
+    // 5. 주의사항 용어 필터 적용
+    const filteredText = filterCareerNoteText(rawNoteText);
+
+    // 모달창 오픈 및 데이터 세팅
+    const modal = document.getElementById("career-note-modal");
+    const textarea = document.getElementById("career-modal-text");
+    const charCounter = document.getElementById("career-modal-char-count");
+
+    if (modal && textarea && charCounter) {
+        textarea.value = filteredText;
+        charCounter.innerText = `${filteredText.length}자`;
+        modal.classList.add("active");
+    }
+};
+
+// 단어 필터링 치환 함수
+function filterCareerNoteText(text) {
+    if (!text) return "";
+    let filtered = text;
+    // 특정 단어 치환 규칙 반영
+    filtered = filtered.replace(/AI/gi, "인공지능");
+    filtered = filtered.replace(/MBTI/gi, "성격유형검사");
+    filtered = filtered.replace(/커리어넷/gi, "온라인 진로검사");
+    
+    // 특정 상호명이나 대외 기밀 기관명이 포함되지 않도록 이중 가드
+    filtered = filtered.replace(/Google/gi, "구글");
+    filtered = filtered.replace(/네이버/gi, "온라인 포털");
+    
+    return filtered;
+}
+
+// 모달창 닫기 함수
+window.closeCareerModal = function() {
+    const modal = document.getElementById("career-note-modal");
+    if (modal) {
+        modal.classList.remove("active");
+    }
+};
+
+// 클립보드 복사 함수
+window.copyCareerNoteText = function() {
+    const textarea = document.getElementById("career-modal-text");
+    if (!textarea) return;
+
+    const textToCopy = textarea.value;
+    
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                alert("특기사항이 클립보드에 성공적으로 복사되었습니다! 📋");
+            })
+            .catch(err => {
+                console.error("Clipboard copy failed:", err);
+                fallbackCopyText(textarea);
+            });
+    } else {
+        fallbackCopyText(textarea);
+    }
+};
+
+// 클립보드 복사 Fallback (일부 구형 웹뷰 혹은 지원되지 않는 브라우저용)
+function fallbackCopyText(textarea) {
+    textarea.select();
+    textarea.setSelectionRange(0, 99999); // 모바일 대응
+    try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+            alert("특기사항이 클립보드에 성공적으로 복사되었습니다! 📋");
+        } else {
+            alert("복사에 실패했습니다. 직접 선택하여 복사해 주세요.");
+        }
+    } catch (err) {
+        console.error("Fallback copy error:", err);
+        alert("복사 기능이 지원되지 않는 브라우저입니다. 직접 텍스트를 선택하여 복사해 주세요.");
+    }
+}
+
